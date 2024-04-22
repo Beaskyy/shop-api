@@ -11,6 +11,7 @@ router.post("/", (req, res, next) => {
   const product = {
     name: req.body.name,
     price: req.body.price,
+    desc: req.body.desc,
   };
   res.status(201).json({
     message: "handle POST request to /products",
