@@ -34,16 +34,10 @@ router.post("/", (req, res, next) => {
 router.get("/:productId", (req, res, next) => {
   const id = req.params.productId;
 
-  if (id === "special") {
-    res.status(200).json({
-      message: "You discover a special product",
-      id,
-    });
-  } else {
-    res.status(200).json({
-      message: "You passed an id",
-    });
-  }
+  Product.findById(id)
+    .exec()
+    .then((doc) => console.log(doc))
+    .catch((err) => console.log(err));
 });
 
 router.patch("/:productId", (req, res, next) => {
