@@ -23,12 +23,19 @@ router.post("/", (req, res, next) => {
   });
   product
     .save()
-    .then((result) => console.log(result))
-    .catch((err) => console.log(err));
-  res.status(201).json({
-    message: "handle POST request to /products",
-    product,
-  });
+    .then((result) => {
+      console.log(result);
+      res.status(201).json({
+        message: "handle POST request to /products",
+        product,
+      });
+    })
+    .catch((err) => {
+      console.log(err)
+      res.status(500).json({
+        error: err,
+      })
+    });
 });
 
 router.get("/:productId", (req, res, next) => {
@@ -36,8 +43,16 @@ router.get("/:productId", (req, res, next) => {
 
   Product.findById(id)
     .exec()
-    .then((doc) => console.log(doc))
-    .catch((err) => console.log(err));
+    .then((doc) => {
+      console.log(doc);
+      res.status(200).json(doc);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+      });
+    });
 });
 
 router.patch("/:productId", (req, res, next) => {
