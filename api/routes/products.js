@@ -67,10 +67,29 @@ router.get("/:productId", (req, res, next) => {
 
 router.patch("/:productId", (req, res, next) => {
   const id = req.params.productId;
-  Product.update({ _id: id })
+  // const updateOps = {};
+  // for (const ops of req.body) {
+  //   updateOps[ops.propName] = ops.value;
+  // }
+  const update = {
+    name: req.body.name,
+    price: req.body.price,
+  };
+
+  const filter = { _id: id };
+
+  const options = {
+    new: true,
+  };
+  Product.findOneAndUpdate(filter, update, options)
     .exec()
     .then((result) => res.status(200).json(result))
-    .catch();
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+      });
+    });
 });
 
 router.delete("/:productId", (req, res, next) => {
