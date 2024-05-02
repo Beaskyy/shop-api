@@ -73,7 +73,13 @@ router.get("/:productId", (req, res, next) => {
     .then((doc) => {
       console.log(doc);
       if (doc) {
-        res.status(200).json(doc);
+        res.status(200).json({
+          products: doc,
+          request: {
+            type: "GET",
+            url: `http://localhost:3000/products/${doc._id}`,
+          },
+        });
       } else {
         res.status(404).json({
           message: "No valid entry found for provided ID",
@@ -106,7 +112,13 @@ router.patch("/:productId", (req, res, next) => {
   };
   Product.findOneAndUpdate(filter, update, options)
     .exec()
-    .then((result) => res.status(200).json(result))
+    .then((result) => res.status(200).json({
+      message: "Product updated successfully",
+      request: {
+        type: "",
+        url: `http://localhost:3000/products/${result._id}`,
+      }
+    }))
     .catch((err) => {
       console.log(err);
       res.status(500).json({
@@ -119,7 +131,7 @@ router.delete("/:productId", (req, res, next) => {
   const id = req.params.productId;
   Product.findOneAndDelete({ _id: id })
     .exec()
-    .then((result) => res.status(200).json(result))
+    .then((result) => res.status(200).json(result ))
     .catch((err) => {
       console.log(err);
       res.status(500).json({
