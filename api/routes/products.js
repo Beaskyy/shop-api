@@ -131,7 +131,14 @@ router.delete("/:productId", (req, res, next) => {
   const id = req.params.productId;
   Product.findOneAndDelete({ _id: id })
     .exec()
-    .then((result) => res.status(200).json(result ))
+    .then((result) => res.status(200).json({
+      message: "Product deleted successfully",
+      request: {
+        type: "POSTT",
+        url: `http://localhost:3000/products/${result._id}`,
+        body: {name: 'String', price: "Number"}
+      }
+    }))
     .catch((err) => {
       console.log(err);
       res.status(500).json({
