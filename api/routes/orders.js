@@ -3,24 +3,65 @@ const router = express.Router();
 const mongoose = require("mongoose");
 
 const Order = require("../models/order");
+const Product = require("../models/product");
 
 router.get("/", (req, res, next) => {
-  res.status(200).json({
-    message: "Orders were fetched",
-  });
+  Order.find()
+    .select("product quantity _id")
+    .exec()
+    .then((result) => {
+      console.log(result);
+      res.status(200).json({
+        count: result.length,
+        orders: result.map((item) => {
+          return {
+            _id: item._id,
+            product: item.productId,
+            quantity: item.quantity,
+            request: {
+              type: "GET",
+              url: `http://localhost:3000/orders/${item._id}`,
+            },
+          };
+        }),
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+      });
+    });
 });
 
 router.post("/", (req, res, next) => {
-  const order = new Order({
-    _id: new mongoose.Types.ObjectId(),
-    product: req.body.productId,
-    quantity: req.body.quantity,
-  });
-  order
-    .save()
-    .then((result) => {
-      console.log(result);
-      res.status(201).json(result);
+  Product.findById(req.body.ProductId)
+    .then((product) => {
+      if (!product) {
+        return res.status(404).json({
+          message: "Product not found",
+        });
+      }
+      const order = new Order({
+        _id: new mongoose.Types.ObjectId(),
+        product: req.body.productId,
+        quantity: req.body.quantity,
+      });
+      return order.save().then((result) => {
+        console.log(result);
+        res.status(201).json({
+          message: "Created order successfully",
+          order: {
+            _id: result._id,
+            product: result.product,
+            quantity: result.quantity,
+            request: {
+              type: "GET",
+              url: `http://localhost:3000/orders/${result._id}`,
+            },
+          },
+        });
+      });
     })
     .catch((err) => {
       console.log(err);
